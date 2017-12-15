@@ -24,9 +24,20 @@ const list = [
 class App extends Component {
   constructor(props){
     super(props)
+    // The state is an abstraction that is modified by onDismiss method.
     this.state={
       list,
     }
+    // This binds event handler to component *instance*
+    this.onDismiss = this.onDismiss.bind(this)
+  }
+
+  onDismiss(id){
+    const updatedList = this.state.list.filter(item => item.objectID !== id)
+    // Notice we bound onDismiss's this to the constructor earler,
+    // and that rule still applies in its definition, as well as where
+    // it's called.
+    this.setState({ list: updatedList })
   }
   render() {
     return (
@@ -42,9 +53,9 @@ class App extends Component {
             <span>{item.points}</span>
             <span>
               <button
-                onClick={()=> this.onDissmiss(item.objectID)}
+                onClick={()=> this.onDismiss(item.objectID)}
                 type="button"
-              >
+              > Delete
               </button>
             </span>
           </div>
