@@ -20,6 +20,11 @@ const list = [
     objectID: 1
   }
 ]
+// Helper funciton passed to filter
+const isSearched = searchTerm => item =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+
+
 
 class App extends Component {
   constructor(props){
@@ -27,9 +32,16 @@ class App extends Component {
     // The state is an abstraction that is modified by onDismiss method.
     this.state={
       list,
+      searchTerm: "",
     }
     // This binds event handler to component *instance*
+    this.onChangeSearch = this.onChangeSearch.bind(this)
     this.onDismiss = this.onDismiss.bind(this)
+  }
+
+  // This method puts the value of input in form into this.state
+  onChangeSearch(event){
+    this.setState({searchTerm: event.target.value})
   }
 
   onDismiss(id){
@@ -42,7 +54,14 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        {this.state.list.map(item=>
+        <form>
+        {/*THe function passed to onChange is defined in the component*/}
+          <input
+            type="text"
+            onChange={this.onChangeSearch}
+          />
+        </form>
+        {this.state.list.filter(isSearched(this.state.searchTerm)).map(item=>
 
           <div key={item.objectID}>
             <span>
@@ -52,8 +71,11 @@ class App extends Component {
             <span>{item.num_comments}</span>
             <span>{item.points}</span>
             <span>
+            {/* Remember this is basically a for loop, 'for item in..'
+             We require there to be a function in the handler, because
+             otherwise the expression would execute when browser loads page*/}
               <button
-                onClick={()=> this.onDismiss(item.objectID)}
+                onClick={()=> console.log(this)}
                 type="button"
               > Delete
               </button>
