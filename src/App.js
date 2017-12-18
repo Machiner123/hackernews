@@ -58,7 +58,7 @@ class App extends Component {
       <div className="App">
         <Search
           value={searchTerm}
-          onChange={this.onSearchChange}
+          onChange={this.onChangeSearch}
         />
         <Table
           list = {list}
