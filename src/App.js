@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
+const DEFAULT_QUERY = 'redux',
+      PATH_BASE = 'https://hn.angolia.com/api/v1',
+      PATH_SEARCH = '/search',
+      PARAM_SEARCH = 'query=';
+
+const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
+
 const list = [
   {
     title: 'React',
