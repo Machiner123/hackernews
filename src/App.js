@@ -87,8 +87,8 @@ class App extends Component {
           </Search>
         </div>
           <Table
-            list = {result.hits}
-            pattern = {searchTerm}
+            list={result.hits}
+            pattern={searchTerm}
             onDismiss={this.onDismiss}
           />
       </div>
@@ -96,6 +96,8 @@ class App extends Component {
   }
 }
 
+// Notice params are the two perops from App.render, plus children,
+// Which is the 'Seach' string child of input element App.render.<search>Search<search>
 const Search = ({value, onChange, children})=>
   <form>
     {children} <input
@@ -105,7 +107,7 @@ const Search = ({value, onChange, children})=>
     />
   </form>
 
-
+// Notice the parameters match up with props in App.render Table jsx element
 const Table =({list, pattern, onDismiss})=>
   <div className="table">
     {/*These are not uls with lis, they are divs with spans per info*/}
