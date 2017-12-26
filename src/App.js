@@ -28,6 +28,7 @@ class App extends Component {
     this.setSearchTopStories = this.setSearchTopStories.bind(this)
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this)
     this.onChangeSearch = this.onChangeSearch.bind(this)
+    this.onSearchSubmit = this.onSearchSubmit.bind(this)
     this.onDismiss = this.onDismiss.bind(this)
   }
 
@@ -49,9 +50,17 @@ class App extends Component {
 
   // Actually does the search with the updated searchTerm
   componentDidMount(){
+    // ES6 destructuring this.state, same as const searchTerm = this.state.searchTerm
     const { searchTerm } = this.state
     console.log(searchTerm)
     this.fetchSearchTopStories(searchTerm)
+  }
+
+  // This takes what onSearchChange updated and runs fetch
+  onSearchSubmit(event) {
+    const { searchTerm } = this.state
+    this.fetchSearchTopStories(searchTerm)
+    event.preventDefault()
   }
 
   // This method puts the value of input in form into this.state
@@ -59,19 +68,20 @@ class App extends Component {
     this.setState({searchTerm: event.target.value})
   }
 
+  // We want to replace old hits with new hits. Instead of mutating result in state,
+  // we create a new object, where old result.hits is replaced with updatedHits
   onDismiss(id){
-    const updatedList = this.state.list.filter(item => item.objectID !== id)
-    // Notice we bound onDismiss's this to the constructor earler,
-    // and that rule still applies in its definition, as well as where
-    // it's called.
-    this.setState({ list: updatedList })
+    const updatedHits = this.state.result.hits.filter(item => item.objectID !== id)
+    this.setState({
+      result: { ...this.state.result, hits: updatedHits}
+    })
   }
 
   render() {
     // Destructuring the state object into const list =this.state.list, searchTerm =this.state.searchTerm
     const {searchTerm, result} = this.state
 
-    if (!result) { return null }
+
     // The attributes in jsx 'tags' are passed to 'child' components through
     // props variable.
     return (
@@ -80,17 +90,21 @@ class App extends Component {
           <Search
             value={searchTerm}
             onChange={this.onChangeSearch}
+            onSubmit={this.onSearchSubmit}
           >
           {/* Searchies is child of search, and in Search Components
             It is referenced as children in props. */}
             Searchies
           </Search>
         </div>
-          <Table
-            list={result.hits}
-            pattern={searchTerm}
-            onDismiss={this.onDismiss}
-          />
+          { result
+            ? <Table
+              list={result.hits}
+              // pattern={searchTerm}
+              onDismiss={this.onDismiss}
+            />
+            : null
+          }
       </div>
     );
   }
@@ -98,20 +112,23 @@ class App extends Component {
 
 // Notice params are the two perops from App.render, plus children,
 // Which is the 'Seach' string child of input element App.render.<search>Search<search>
-const Search = ({value, onChange, children})=>
-  <form>
-    {children} <input
+const Search = ({value, onChange, onSubmit, children})=>
+  <form onSubmit={onSubmit}>
+    <input
       type="text"
       value={value}
       onChange={onChange}
     />
+    <button type="submit">
+      {children}
+    </button>
   </form>
 
 // Notice the parameters match up with props in App.render Table jsx element
-const Table =({list, pattern, onDismiss})=>
+const Table =({list, onDismiss})=>
   <div className="table">
     {/*These are not uls with lis, they are divs with spans per info*/}
-    {list.filter(isSearched(pattern)).map(item =>
+    {list.map(item =>
       <div key={item.objectID} className="table-row">
         <span style={{ width: '30%'}}>
           <a href={item.url}>{item.title}: </a>
